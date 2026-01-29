@@ -22,41 +22,7 @@ jobs:
           go-version: '1.23'
 
       - name: Build binaries
-        run: |
-          VERSION=${GITHUB_REF#refs/tags/}
-          COMMIT=$(git rev-parse --short HEAD)
-          DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          
-          # Build matrix
-          PLATFORMS=(
-            "linux/amd64"
-            "linux/arm64"
-            "darwin/amd64"
-            "darwin/arm64"
-            "windows/amd64"
-          )
-          
-          mkdir -p dist
-          
-          for PLATFORM in "${PLATFORMS[@]}"; do
-            GOOS="${PLATFORM%/*}"
-            GOARCH="${PLATFORM#*/}"
-            OUTPUT="sy-${GOOS}-${GOARCH}"
-            
-            if [ "$GOOS" = "windows" ]; then
-              OUTPUT="${OUTPUT}.exe"
-            fi
-            
-            echo "Building $OUTPUT..."
-            CGO_ENABLED=0 GOOS=$GOOS GOARCH=$GOARCH go build \
-              -ldflags="-s -w -X main.version=${VERSION} -X main.commit=${COMMIT} -X main.date=${DATE}" \
-              -o "dist/${OUTPUT}" \
-              ./cmd/sy
-          done
-          
-          # Create checksums
-          cd dist
-          sha256sum * > checksums.txt
+        run: make release VERSION=${GITHUB_REF#refs/tags/}
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
