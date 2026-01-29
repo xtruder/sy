@@ -1,0 +1,27 @@
+# Binary (in root only)
+/sy
+/sy.exe
+
+# Build artifacts
+dist/
+build/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test artifacts
+*.test
+coverage.out
+coverage.html
+
+# Temp files
+*.tmp
+*.log
