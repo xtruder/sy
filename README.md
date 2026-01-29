@@ -7,77 +7,6 @@
 
 A command-line interface for [SiYuan Note](https://b3log.org/siyuan/), designed for power users and LLM integration.
 
-## Features
-
-- **Document Management** - List, create, move, rename, and delete documents
-- **Export/Import** - Kramdown format with block ID preservation, or pure markdown
-- **Interactive Editing** - Edit documents with your favorite `$EDITOR`
-- **Inline Modifications** - Append, prepend, replace, or delete blocks
-- **Code Import** - Import source files as syntax-highlighted code blocks
-- **SQL Queries** - Query SiYuan's block database directly
-- **Full-text Search** - Search across all documents
-- **Shell Completions** - Tab completion for paths, notebooks, and commands
-- **Block References** - Auto-expand `((block-id))` with document titles
-
-## Installation
-
-### From Binary
-
-Download the latest release from the [releases page](https://github.com/xtruder/sy/releases).
-
-```bash
-# Linux (amd64)
-curl -LO https://github.com/xtruder/sy/releases/latest/download/sy-linux-amd64
-chmod +x sy-linux-amd64
-sudo mv sy-linux-amd64 /usr/local/bin/sy
-
-# macOS (arm64)
-curl -LO https://github.com/xtruder/sy/releases/latest/download/sy-darwin-arm64
-chmod +x sy-darwin-arm64
-sudo mv sy-darwin-arm64 /usr/local/bin/sy
-
-# Windows (amd64)
-# Download sy-windows-amd64.exe from releases
-```
-
-### From Source
-
-```bash
-go install github.com/xtruder/sy/cmd/sy@latest
-```
-
-### Shell Completions
-
-```bash
-# Bash
-sy completion bash > /etc/bash_completion.d/sy
-
-# Zsh
-sy completion zsh > "${fpath[1]}/_sy"
-
-# Fish
-sy completion fish > ~/.config/fish/completions/sy.fish
-```
-
-## Configuration
-
-Configuration is resolved in order: CLI flag > environment variable > config file > default.
-
-| Source | Host | Token | Notebook |
-|--------|------|-------|----------|
-| Flag | `--host` | `--token` | `-n, --notebook` |
-| Env | `SIYUAN_HOST` | `SIYUAN_TOKEN` | `SIYUAN_NOTEBOOK` |
-| Config | `host:` | `token:` | `notebook:` |
-| Default | `http://localhost:6806` | (none) | (first notebook) |
-
-Config file location: `~/.config/sy/config.yaml`
-
-```yaml
-host: http://localhost:6806
-token: your-api-token
-notebook: Personal
-```
-
 ## Usage
 
 ### Notebook Management
@@ -167,6 +96,77 @@ sy edit /Doc --content "See ((20251107131636-pa13zyp))"
 # Becomes: See ((20251107131636-pa13zyp "Models"))
 ```
 
+## Installation
+
+### From Binary
+
+Download the latest release from the [releases page](https://github.com/xtruder/sy/releases).
+
+```bash
+# Linux (amd64)
+curl -LO https://github.com/xtruder/sy/releases/latest/download/sy-linux-amd64
+chmod +x sy-linux-amd64
+sudo mv sy-linux-amd64 /usr/local/bin/sy
+
+# macOS (arm64)
+curl -LO https://github.com/xtruder/sy/releases/latest/download/sy-darwin-arm64
+chmod +x sy-darwin-arm64
+sudo mv sy-darwin-arm64 /usr/local/bin/sy
+
+# Windows (amd64)
+# Download sy-windows-amd64.exe from releases
+```
+
+### From Source
+
+```bash
+go install github.com/xtruder/sy/cmd/sy@latest
+```
+
+### Shell Completions
+
+```bash
+# Bash
+sy completion bash > /etc/bash_completion.d/sy
+
+# Zsh
+sy completion zsh > "${fpath[1]}/_sy"
+
+# Fish
+sy completion fish > ~/.config/fish/completions/sy.fish
+```
+
+## Configuration
+
+Configuration is resolved in order: CLI flag > environment variable > config file > default.
+
+| Source | Host | Token | Notebook |
+|--------|------|-------|----------|
+| Flag | `--host` | `--token` | `-n, --notebook` |
+| Env | `SIYUAN_HOST` | `SIYUAN_TOKEN` | `SIYUAN_NOTEBOOK` |
+| Config | `host:` | `token:` | `notebook:` |
+| Default | `http://localhost:6806` | (none) | (first notebook) |
+
+Config file location: `~/.config/sy/config.yaml`
+
+```yaml
+host: http://localhost:6806
+token: your-api-token
+notebook: Personal
+```
+
+## Features
+
+- **Document Management** - List, create, move, rename, and delete documents
+- **Export/Import** - Kramdown format with block ID preservation, or pure markdown
+- **Interactive Editing** - Edit documents with your favorite `$EDITOR`
+- **Inline Modifications** - Append, prepend, replace, or delete blocks
+- **Code Import** - Import source files as syntax-highlighted code blocks
+- **SQL Queries** - Query SiYuan's block database directly
+- **Full-text Search** - Search across all documents
+- **Shell Completions** - Tab completion for paths, notebooks, and commands
+- **Block References** - Auto-expand `((block-id))` with document titles
+
 ## Kramdown Format
 
 SiYuan uses kramdown with Inline Attribute Lists (IAL) to preserve block IDs:
@@ -194,7 +194,7 @@ Paragraph content here.
 
 ### Prerequisites
 
-- Go 1.21+
+- Go 1.23+
 - SiYuan running locally (default: `http://localhost:6806`)
 
 ### Build
@@ -202,15 +202,18 @@ Paragraph content here.
 ```bash
 git clone https://github.com/xtruder/sy.git
 cd sy
-go build -o sy ./cmd/sy
+make build
 ```
 
-### Test
+### Commands
 
 ```bash
-# Run with local SiYuan instance
-./sy ls
-./sy cat /Test/Document
+make build         # Build binary
+make test          # Run tests
+make lint          # Run linter
+make check         # Run all checks (fmt, lint, test, build)
+make release       # Build for all platforms
+make help          # Show all targets
 ```
 
 ### Project Structure
@@ -225,11 +228,12 @@ sy/
 │   │   ├── document.go      # Document CRUD
 │   │   ├── block.go         # Block operations
 │   │   └── query.go         # SQL and search
-│   ├── cmd/                  # Command implementations
+│   ├── cmd/                 # Command implementations
 │   ├── config/              # Configuration
 │   ├── format/              # Output formatting
 │   └── util/                # Utilities
 ├── go.mod
+├── Makefile
 └── README.md
 ```
 
